@@ -10,7 +10,8 @@ import {
   createUserService,
   createAuthController,
   createUserController,
-  createAuthMiddleware
+  createAuthMiddleware,
+  createTransactionLoggerController
 } from '../services';
 
 import {
@@ -67,5 +68,38 @@ container.bind<IAuthMiddleware>(TYPES.AuthMiddleware).toDynamicValue(() => {
   const logger = container.get<ILogger>(TYPES.Logger);
   return createAuthMiddleware(userRepo, logger);
 });
+
+container.bind(TYPES.TransactionMiddleware).toDynamicValue(() =>{
+  return createTransactionLoggerController();
+});
+
+
+// import { inject, injectable } from 'inversify';
+
+// @injectable()
+// class Katana {
+// public readonly damage: number = 10;
+// onlyformMe:number = 20;
+// darshan(){
+//   return this.damage;
+// }
+// }
+
+// @injectable()
+// class Ninja {
+// constructor( @inject(Katana) public readonly darsah: Katana) {
+// }
+
+// getkatana() {
+//   return this.darsah;
+// }
+// }
+
+// container.bind(Ninja).toSelf();
+// container.bind(Katana).toSelf();
+
+// const ninja: Ninja = container.get(Ninja);
+
+// console.log(ninja.getkatana().damage);
 
 export default container;

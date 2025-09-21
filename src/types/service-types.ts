@@ -1,4 +1,4 @@
-import { IUser } from './index';
+import { ILog, IUser } from './index';
 import express from 'express';
 
 export const TYPES = {
@@ -9,7 +9,8 @@ export const TYPES = {
   UserService: Symbol.for('UserService'),
   AuthController: Symbol.for('AuthController'),
   UserController: Symbol.for('UserController'),
-  AuthMiddleware: Symbol.for('AuthMiddleware')
+  AuthMiddleware: Symbol.for('AuthMiddleware'),
+  TransactionMiddleware: Symbol.for('TransactionMiddleware')
 };
 
 export interface ILogger {
@@ -60,4 +61,8 @@ export interface IUserController {
 export interface IAuthMiddleware {
   isAuthenticated(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void | express.Response>;
   isOwner(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void | express.Response>;
+}
+
+export interface ITransactionLogger {
+  createTransactionLogger(level: string, message: string): Promise<ILog>;
 }

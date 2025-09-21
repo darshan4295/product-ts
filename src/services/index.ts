@@ -7,6 +7,8 @@ import {
   IUserService, IAuthController, IUserController, IAuthMiddleware 
 } from '../types/service-types';
 
+import { createLogEntry } from '../db/log';
+
 // Logger Service
 export function createLogger(): ILogger {
   return {
@@ -288,4 +290,12 @@ export function createAuthMiddleware(userRepo: IUserRepository, logger: ILogger)
       }
     }
   };
+}
+
+export function createTransactionLoggerController() {
+  return {
+    async createTransactionLogger(level: string, message: string) {
+      return await createLogEntry(level, message);
+    }
+  }
 }

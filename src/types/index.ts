@@ -10,6 +10,11 @@ export interface IUser extends Document {
   };
 }
 
+export interface ILog extends Document {
+  level: string;
+  message: string;
+  timestamp: Date;
+}
 // Extend Express Request interface to include identity
 declare global {
   namespace Express {
