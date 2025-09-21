@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/inversify": "^2.0.32",
     "@types/lodash": "^4.17.20",
     "@types/mongoose": "^5.11.96",
     "lodash": "^4.17.21",
@@ -30,6 +31,8 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "http": "^0.0.1-security",
-    "mongoose": "^8.18.1"
+    "inversify": "^7.10.0",
+    "mongoose": "^8.18.1",
+    "reflect-metadata": "^0.2.2"
   }
 }
