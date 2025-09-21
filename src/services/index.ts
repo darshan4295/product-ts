@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { get, merge } from 'lodash';
-import { createUser, getUserByEmail, getUserBySessionToken, getUsers, deleteUserById, updateUserById } from '../db/user';
+import { createUser, getUserByEmail, getUserBySessionToken, getUsers, deleteUserById, updateUserById, getUserById } from '../db/user';
 import { authentication, random } from '../helpers';
 import { 
   ILogger, ICryptoHelper, IUserRepository, IAuthService, 
@@ -25,7 +25,6 @@ export function createCryptoHelper(): ICryptoHelper {
   };
 }
 
-// User Repository Service (wraps your existing db functions)
 export function createUserRepository(logger: ILogger): IUserRepository {
   return {
     async getUsers() {
@@ -42,7 +41,7 @@ export function createUserRepository(logger: ILogger): IUserRepository {
     },
     async getUserById(id: string) {
       logger.debug(`Fetching user by ID: ${id}`);
-      return getUserBySessionToken(id);
+      return getUserById(id);
     },
     async createUser(values: any) {
       logger.debug(`Creating new user: ${values.email}`);
@@ -90,7 +89,7 @@ export function createAuthService(userRepo: IUserRepository, crypto: ICryptoHelp
         
         logger.info(`Login successful for email: ${email}`);
         return { success: true, user };
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Login error: ${error.message}`);
         return { success: false, error: 'Login failed' };
       }
@@ -123,7 +122,7 @@ export function createAuthService(userRepo: IUserRepository, crypto: ICryptoHelp
 
         logger.info(`Registration successful for email: ${email}`);
         return { success: true };
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Registration error: ${error.message}`);
         return { success: false, error: 'Registration failed' };
       }
@@ -164,13 +163,13 @@ export function createAuthController(authService: IAuthService, logger: ILogger)
           return res.status(401).json({ message: result.error });
         }
 
-        res.cookie('Rest-AUTH', result.user.authentication.sessionToken, { 
+        res.cookie('Rest-AUTH', result?.user?.authentication?.sessionToken, { 
           domain: 'localhost', 
           path: '/' 
         });
 
         return res.status(200).json(result.user);
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Controller login error: ${error.message}`);
         return res.sendStatus(400);
       }
@@ -186,7 +185,7 @@ export function createAuthController(authService: IAuthService, logger: ILogger)
         }
 
         return res.status(200).json({ message: "Registration Successful" });
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Controller registration error: ${error.message}`);
         return res.sendStatus(400);
       }
@@ -201,7 +200,7 @@ export function createUserController(userService: IUserService, logger: ILogger)
       try {
         const users = await userService.getAllUsers();
         return res.status(200).json(users).end();
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Get all users error: ${error.message}`);
         return res.sendStatus(400);
       }
@@ -217,7 +216,7 @@ export function createUserController(userService: IUserService, logger: ILogger)
         }
         
         return res.status(200).json({ message: 'User deleted successfully' }).end();
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Delete user error: ${error.message}`);
         return res.sendStatus(400);
       }
@@ -230,7 +229,7 @@ export function createUserController(userService: IUserService, logger: ILogger)
         const user = await userService.updateUser(id, username);
         
         return res.status(200).json(user).end();
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Update user error: ${error.message}`);
         return res.sendStatus(400);
       }
@@ -260,7 +259,7 @@ export function createAuthMiddleware(userRepo: IUserRepository, logger: ILogger)
         merge(req, { identity: existingUser });
         logger.debug('Authentication successful');
         return next();
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Authentication middleware error: ${error.message}`);
         return res.sendStatus(400);
       }
@@ -283,7 +282,7 @@ export function createAuthMiddleware(userRepo: IUserRepository, logger: ILogger)
 
         logger.debug('Owner check successful');
         return next();
-      } catch (error) {
+      } catch (error: any) {
         logger.error(`Owner middleware error: ${error.message}`);
         return res.sendStatus(400);
       }
