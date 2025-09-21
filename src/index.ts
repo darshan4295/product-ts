@@ -18,7 +18,6 @@ app.use(cors({
 app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(ErrorHandler);
 
 const server = http.createServer(app);
 
@@ -43,3 +42,5 @@ console.log('Darshan hande');
 mongoose.connection.on('error', (error) => console.log('MongoDB error:', error));
 
 app.use('/', router()); // Make sure your router function exists and returns a router
+
+app.use(ErrorHandler);
