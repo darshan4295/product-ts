@@ -1,46 +1,14 @@
 import express from 'express';
-import { get, merge } from 'lodash';
-import { getUserBySessionToken } from '../db/user';
+import { container } from '../container';
+import { TYPES, IAuthMiddleware } from '../types/service-types';
 
-export const isOwner = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void | express.Response> => {
-    try {
-        const { id } = req.params;
-        const currentUserId = get(req, 'identity._id') as string;
+// Get the auth middleware from the DI container
+const authMiddleware = container.get<IAuthMiddleware>(TYPES.AuthMiddleware);
 
-        if (!currentUserId) {
-            return res.sendStatus(403);
-        }
-
-        if (currentUserId.toString() !== id) {
-            return res.sendStatus(403);
-        }
-
-        return next();
-    } catch (error) {
-        console.log(error);
-        return res.sendStatus(400);
-    }
+export const isOwner = (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void | express.Response> => {
+    return authMiddleware.isOwner(req, res, next);
 };
 
-export const isAuthenticated = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void | express.Response> => {
-    try {
-        const sessionToken = req.cookies['Rest-AUTH'];
-
-        if (!sessionToken) {
-            return res.sendStatus(403);
-        }
-
-        const existingUser = await getUserBySessionToken(sessionToken);
-        
-        if (!existingUser) {
-            return res.sendStatus(403);
-        }
-
-        merge(req, { identity: existingUser });
-
-        return next();
-    } catch (error) {
-        console.log(error);
-        return res.sendStatus(400);
-    }
+export const isAuthenticated = (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void | express.Response> => {
+    return authMiddleware.isAuthenticated(req, res, next);
 };

@@ -18,3 +18,6 @@ declare global {
     }
   }
 }
+
+// Export service types
+export * from './service-types';
