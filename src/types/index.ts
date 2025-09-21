@@ -20,4 +20,4 @@ declare global {
 }
 
 // Export service types - Make sure the file exists
-export * from './service-types'; // Note: singular "service-types", not "services-types"
+export * from './service-types';

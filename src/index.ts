@@ -12,7 +12,7 @@ import { container } from './container'; // Initialize DI container
 import { TYPES, ILogger } from './types/service-types';
 
 // Get logger from DI container
-const logger = container.get<ILogger>(TYPES.Logger);
+const logger = container.get(TYPES.Logger) as ILogger;
 
 const app = express();
 

@@ -1,3 +1,6 @@
+import { IUser } from './index';
+import express from 'express';
+
 export const TYPES = {
   Logger: Symbol.for('Logger'),
   CryptoHelper: Symbol.for('CryptoHelper'),
@@ -21,9 +24,6 @@ export interface ICryptoHelper {
   authentication(salt: string, password: string): Buffer;
 }
 
-// Import proper types for better type safety
-import { IUser } from './index';
-import express from 'express';
 
 export interface IUserRepository {
   getUsers(): Promise<IUser[]>;
