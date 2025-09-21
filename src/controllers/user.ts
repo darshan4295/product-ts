@@ -4,8 +4,11 @@ import { deleteUserById, getUsers, updateUserById } from '../db/user';
 
 
 
-export const getAllUsers = async (req: express.Request, res: express.Response)=>{
+export const getAllUsers = async (req: express.Request, res: express.Response, next: express.NextFunction)=>{
     try{
+
+        return next(new Error("darshan ne bheja"));
+
         const users = await getUsers();
           return res.status(200).json(users).end();
 

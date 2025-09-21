@@ -7,6 +7,8 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import router from './router';
 import "reflect-metadata";
+import ErrorHandler from './middlewares/ErrorHandlerx';
+
 const app = express();
 
 app.use(cors({
@@ -16,6 +18,7 @@ app.use(cors({
 app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(ErrorHandler);
 
 const server = http.createServer(app);
 
