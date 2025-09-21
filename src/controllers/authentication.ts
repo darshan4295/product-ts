@@ -1,6 +1,40 @@
 import express from 'express';
-import { createUser, getUserByEmail } from 'db/user';
-import { authentication, random } from 'helpers';
+import { createUser, getUserByEmail } from '../db/user';
+import { authentication, random } from '../helpers';
+
+export const login = async(req: express.Request, res: express.Response)=>{
+
+    try{
+
+        const{email, password} = req.body;
+        if(!email || !password){
+            return res.sendStatus(400);
+        }
+
+        const user = await getUserByEmail(email).select('+authentication.salt +authentication.password');
+        if(!user){
+            return res.sendStatus(400);
+        }
+
+        const expectedHash = authentication(user.authentication.salt, password);
+
+        if (user.authentication.password !== expectedHash.toString()) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+
+        const salt = random();
+        user.authentication.sessionToken = authentication(salt,user._id.toString()).toString();
+        await user.save();
+        res.cookie('Rest-AUTH', user.authentication.sessionToken, {domain: 'localhost', path:'/'})
+
+        return res.status(200).json(user).end();
+    }catch(error){
+        console.log(error);
+        return res.sendStatus(400);
+    }
+}
+
 
 export const register = async(req: express.Request, res: express.Response)=>{
     try{
@@ -14,7 +48,7 @@ export const register = async(req: express.Request, res: express.Response)=>{
         const existingUser = await getUserByEmail(email);
 
         if(existingUser){
-            return res.sendStatus(400);
+            return res.status(400).json({message: "User already exist"});
         }
         const salt = random();
         const user = await createUser({
@@ -26,7 +60,7 @@ export const register = async(req: express.Request, res: express.Response)=>{
             }
         })
 
-        return res.status(200).json(user).end();
+        return res.status(200).json({message:"Registration Successfull"}).end();
     }catch(error){
         console.log(error);
         return res.sendStatus(400);
